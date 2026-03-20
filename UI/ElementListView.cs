@@ -1,8 +1,8 @@
-using Elem.Data;
-using Elem.Forms;
+using System.Collections.Generic;
+using System.Linq;
 using Elem.Models;
 
-namespace Elem.Views;
+namespace Elem.UI;
 
 public sealed class ElementListView : UserControl {
 	private readonly ListBox _listBox;

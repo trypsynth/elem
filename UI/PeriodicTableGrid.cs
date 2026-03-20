@@ -1,11 +1,9 @@
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms.Automation;
-using Elem.Data;
-using Elem.Forms;
 using Elem.Models;
 
-namespace Elem.Controls;
+namespace Elem.UI;
 
 public sealed class PeriodicTableGrid : Control {
 	private const int CellW = 58;
@@ -308,8 +306,7 @@ public sealed class PeriodicTableGrid : Control {
 
 		public override AccessibleRole Role => AccessibleRole.Table;
 
-		public override int GetChildCount() =>
-			ElementData.GridRows * ElementData.GridCols;
+		public override int GetChildCount() => ElementData.GridRows * ElementData.GridCols;
 
 		public override AccessibleObject? GetChild(int index) {
 			var row = index / ElementData.GridCols;
@@ -336,8 +333,7 @@ public sealed class PeriodicTableGrid : Control {
 			return base.Navigate(navdir);
 		}
 
-		public override AccessibleObject? GetFocused() =>
-			Grid._focusedCellAcc ?? GetChild(Grid._selRow * ElementData.GridCols + Grid._selCol);
+		public override AccessibleObject? GetFocused() => Grid._focusedCellAcc ?? GetChild(Grid._selRow * ElementData.GridCols + Grid._selCol);
 	}
 
 	private sealed class CellAccessibleObject : AccessibleObject {
@@ -352,11 +348,7 @@ public sealed class PeriodicTableGrid : Control {
 			_col = col;
 		}
 
-		public override string Name =>
-			_el.AccessibleDescription;
-
-		public override string? Description =>
-			$"Press Enter to see all properties of {_el.Name}.";
+		public override string Name => _el.AccessibleDescription;
 
 		public override AccessibleRole Role => AccessibleRole.Cell;
 
@@ -365,14 +357,12 @@ public sealed class PeriodicTableGrid : Control {
 		public override AccessibleStates State {
 			get {
 				var s = AccessibleStates.Focusable | AccessibleStates.Selectable;
-				if (_owner._selRow == _row && _owner._selCol == _col)
-					s |= AccessibleStates.Focused | AccessibleStates.Selected;
+				if (_owner._selRow == _row && _owner._selCol == _col) s |= AccessibleStates.Focused | AccessibleStates.Selected;
 				return s;
 			}
 		}
 
-		public override Rectangle Bounds =>
-			_owner.RectangleToScreen(_owner.CellBounds(_row, _col));
+		public override Rectangle Bounds => _owner.RectangleToScreen(_owner.CellBounds(_row, _col));
 
 		// Allows screen readers to navigate between cells via accNavigate.
 		public override AccessibleObject? Navigate(AccessibleNavigation navdir) =>
@@ -421,7 +411,6 @@ public sealed class PeriodicTableGrid : Control {
 			}
 		}
 
-		// Opens the detail dialog when a screen reader invokes the default action.
 		public override void DoDefaultAction() => _owner.OpenDetail(_row, _col);
 
 		public override string DefaultAction => "Open details";

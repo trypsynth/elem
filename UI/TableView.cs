@@ -1,8 +1,6 @@
-using Elem.Controls;
-using Elem.Data;
 using Elem.Models;
 
-namespace Elem.Views;
+namespace Elem.UI;
 
 public sealed class TableView : UserControl {
 	private readonly PeriodicTableGrid _gridControl;

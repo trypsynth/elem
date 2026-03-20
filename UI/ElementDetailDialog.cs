@@ -1,6 +1,6 @@
 using Elem.Models;
 
-namespace Elem.Forms;
+namespace Elem.UI;
 
 public sealed class ElementDetailDialog : Form {
 	public ElementDetailDialog(Element element) {

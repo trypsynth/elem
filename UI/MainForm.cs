@@ -1,6 +1,4 @@
-using Elem.Views;
-
-namespace Elem.Forms;
+namespace Elem.UI;
 
 public sealed class MainForm : Form {
 	private readonly TableView _tableView;
