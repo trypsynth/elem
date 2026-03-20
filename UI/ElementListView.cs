@@ -11,9 +11,9 @@ public sealed class ElementListView : UserControl {
 
 	private static readonly string[] SortLabels = [
 		"Atomic Number",
-		"Name (alphabetical)",
+		"Name",
 		"Category",
-		"Period then Group",
+		"Table Position",
 		"Phase",
 	];
 
