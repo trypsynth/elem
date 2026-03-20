@@ -68,7 +68,7 @@ public sealed class PeriodicTableGrid : Control {
 		_selCol = 0;
 		var initEl = _grid[0, 0];
 		if (initEl is not null) _focusedCellAcc = new CellAccessibleObject(this, initEl, 0, 0);
-		Width  = LabelOffsetX + CellW * ElementData.GridCols + Pad * 2;
+		Width = LabelOffsetX + CellW * ElementData.GridCols + Pad * 2;
 		Height = LabelOffsetY + CellH * ElementData.GridRows + Pad * 2;
 	}
 
@@ -86,6 +86,8 @@ public sealed class PeriodicTableGrid : Control {
 		BeginInvoke(() => {
 			if (cell is not null) FireUiaFocus(cell);
 			AccessibilityNotifyClients(AccessibleEvents.Focus, childId); // legacy MSAA
+			// CurrentThenMostRecent lets "elements table" finish speaking before announcing the cell.
+			AnnounceSelected(AutomationNotificationProcessing.CurrentThenMostRecent);
 		});
 	}
 
@@ -101,11 +103,11 @@ public sealed class PeriodicTableGrid : Control {
 				case Keys.Right: TryMove(0, 1); return;
 				case Keys.Up: TryMove(-1, 0); return;
 				case Keys.Down: TryMove(1, 0); return;
-				case Keys.Home:     MoveToRowStart();  return;
-				case Keys.End:      MoveToRowEnd();    return;
-				case Keys.PageUp:   MoveToColTop();    return;
+				case Keys.Home: MoveToRowStart(); return;
+				case Keys.End: MoveToRowEnd(); return;
+				case Keys.PageUp: MoveToColTop(); return;
 				case Keys.PageDown: MoveToColBottom(); return;
-				case Keys.Return:   OpenDetail();      return;
+				case Keys.Return: OpenDetail(); return;
 			}
 		}
 		base.WndProc(ref m);
@@ -135,7 +137,7 @@ public sealed class PeriodicTableGrid : Control {
 			var x = Pad + LabelOffsetX + col * CellW + (CellW - sz.Width) / 2;
 			g.DrawString(label, _numFont, labelBrush, x, Pad + 1);
 		}
-		string[] periodLabels = ["1","2","3","4","5","6","7","","La","Ac"];
+		string[] periodLabels = ["1", "2", "3", "4", "5", "6", "7", "", "La", "Ac"];
 		for (var row = 0; row < ElementData.GridRows; row++) {
 			var label = periodLabels[row];
 			if (label.Length == 0) continue;
@@ -236,8 +238,8 @@ public sealed class PeriodicTableGrid : Control {
 		// Cache before firing events so GetFocused() and FireUiaFocus use the same instance.
 		_focusedCellAcc = el is not null ? new CellAccessibleObject(this, el, row, col) : null;
 		AnnounceSelected(); // UIA notification (Narrator / UIA live-region)
-		// Fire UIA AutomationFocusChangedEvent on the cell directly — NVDA uses UIA
-		// for WinForms controls and ignores the MSAA EVENT_OBJECT_FOCUS we fire below.
+							// Fire UIA AutomationFocusChangedEvent on the cell directly — NVDA uses UIA
+							// for WinForms controls and ignores the MSAA EVENT_OBJECT_FOCUS we fire below.
 		if (_focusedCellAcc is not null) FireUiaFocus(_focusedCellAcc);
 		var childId = row * ElementData.GridCols + col + 1;
 		AccessibilityNotifyClients(AccessibleEvents.Focus, childId);     // MSAA legacy
@@ -266,11 +268,11 @@ public sealed class PeriodicTableGrid : Control {
 		panel.AutoScrollPosition = new Point(newX, newY);
 	}
 
-	private void AnnounceSelected() {
+	private void AnnounceSelected(AutomationNotificationProcessing processing = AutomationNotificationProcessing.ImportantMostRecent) {
 		var el = _grid[_selRow, _selCol];
 		var position = $"Row {_selRow + 1}, Column {_selCol + 1}";
 		var text = el is not null ? $"{el.AccessibleDescription} {position}." : $"Blank. {position}.";
-		AccessibilityObject.RaiseAutomationNotification(AutomationNotificationKind.ActionCompleted, AutomationNotificationProcessing.ImportantMostRecent, text);
+		AccessibilityObject.RaiseAutomationNotification(AutomationNotificationKind.ActionCompleted, processing, text);
 	}
 
 	private void OpenDetail() => OpenDetail(_selRow, _selCol);
